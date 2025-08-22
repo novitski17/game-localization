@@ -28,7 +28,7 @@ namespace GameLocalization.Api.Validations.Common
         public static IRuleBuilderOptions<T, string> ApiKeyCode<T>(
             this IRuleBuilder<T, string> rule,
             int maxLength = 150,
-            string pattern = @"^[A-Za-z0-9._-]+$")
+            string pattern = @"^\s*[A-Za-z0-9._-]+\s*$")
         {
             return rule
                 .NotEmpty().WithMessage("Key is required.")

@@ -38,13 +38,24 @@ namespace GameLocalization.Api.Extensions
                 .GetRequiredService<ILoggerFactory>()
                 .CreateLogger("DbStartup");
 
+            var cfg = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+
+            var runMigrations = cfg.GetValue("Database:RunMigrationsOnStartup", true);
+            var runSeed = cfg.GetValue("Database:RunSeedOnStartup", true);
+
             try
             {
-                db.Database.Migrate();
-                logger.LogInformation("Database migrated.");
+                if (runMigrations)
+                {
+                    db.Database.Migrate();
+                    logger.LogInformation("Database migrated.");
+                }
 
-                DbSeeder.SeedAsync(db, logger).GetAwaiter().GetResult();
-                logger.LogInformation("Database seeded.");
+                if (runSeed)
+                {
+                    DbSeeder.SeedAsync(db, logger).GetAwaiter().GetResult();
+                    logger.LogInformation("Database seeded.");
+                }
             }
             catch (Exception ex)
             {
