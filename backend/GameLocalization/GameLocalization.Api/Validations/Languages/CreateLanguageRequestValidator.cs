@@ -10,8 +10,8 @@ namespace GameLocalization.Api.Validations.Languages
         {
             Include(new BaseBodyNotNullValidator<CreateLanguageRequest>());
 
-            RuleFor(x => x.Code).ApiLanguageCodeLoose(10);
-            RuleFor(x => x.Name).ApiShortString(50);
+            RuleFor(x => x.Code).ApiLanguageCode(ApiValidationConst.LanguageCodeMaxLength);
+            RuleFor(x => x.Name).ApiLanguageName(ApiValidationConst.LanguageNameMaxLength);
         }
     }
 }

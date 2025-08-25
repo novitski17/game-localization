@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GameLocalization.Api.Controllers
 {
+    /// <summary>
+    /// Provides operations for managing application languages.
+    /// </summary>
     [ApiController]
     [Route("api/v{version:apiVersion}/languages")]
     [ApiVersion("1.0")]
@@ -23,11 +26,12 @@ namespace GameLocalization.Api.Controllers
         }
 
         /// <summary>
-        /// Returns a list of languages. Optionally includes disabled languages.
+        /// Retrieves a list of all languages.
         /// </summary>
-        /// <param name="includeDisabled">If true, returns both enabled and disabled languages.</param>
+        /// <param name="includeDisabled">If <c>true</c>, returns both enabled and disabled languages. Default is <c>false</c>.</param>
         /// <param name="ct">Cancellation token.</param>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IReadOnlyList<LanguageResponse>>> GetAll(
             [FromQuery] bool includeDisabled = false,
             CancellationToken ct = default)
@@ -41,11 +45,14 @@ namespace GameLocalization.Api.Controllers
         }
 
         /// <summary>
-        /// Returns details of a language by its ID.
+        /// Retrieves details of a language by its unique identifier.
         /// </summary>
-        /// <param name="id">Language ID.</param>
+        /// <param name="id">The language ID.</param>
         /// <param name="ct">Cancellation token.</param>
         [HttpGet("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<LanguageResponse>> GetById(Guid id, CancellationToken ct = default)
         {
             var result = await _service.GetByIdAsync(id, ct);
@@ -53,7 +60,16 @@ namespace GameLocalization.Api.Controllers
             return this.ToOkWrapped<LanguageDto, LanguageResponse>(result, _mapper);
         }
 
+        /// <summary>
+        /// Updates the enabled/disabled status of a language.
+        /// </summary>
+        /// <param name="id">The language ID.</param>
+        /// <param name="request">The request body containing the new status.</param>
+        /// <param name="ct">Cancellation token.</param>
         [HttpPatch("{id:guid}/status")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<LanguageResponse>> UpdateStatus(
             Guid id,
             [FromBody] UpdateLanguageStatusRequest request,

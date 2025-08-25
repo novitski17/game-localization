@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using GameLocalization.Api.Models.Requests.Auth;
 using GameLocalization.Api.Models.Requests.Keys;
 using GameLocalization.Api.Models.Requests.LocalizationTable;
 using GameLocalization.Api.Models.Requests.Translations;
 using GameLocalization.Api.Models.Responses.Common;
 using GameLocalization.Api.Models.Responses.Languages;
 using GameLocalization.Api.Models.Responses.Table;
+using GameLocalization.Core.DTO.Auth;
 using GameLocalization.Core.DTO.Common;
 using GameLocalization.Core.DTO.Keys;
 using GameLocalization.Core.DTO.Languages;
@@ -33,6 +35,8 @@ namespace GameLocalization.Api.Helpers.Mappers
             CreateMap<LocalizationTableQueryRequest, LocalizationTableQueryDto>()
                 .ForMember(d => d.Search,
                     m => m.MapFrom(s => string.IsNullOrWhiteSpace(s.Search) ? null : s.Search.Trim()));
+            CreateMap<LoginRequest, LoginDto>();
+            CreateMap<RegisterRequest, RegisterDto>();
         }
     }
 }

@@ -10,7 +10,7 @@ namespace GameLocalization.Api.Validations.Keys
         {
             Include(new BaseBodyNotNullValidator<CreateKeyRequest>());
 
-            RuleFor(x => x.Key).ApiKeyCode(150);
+            RuleFor(x => x.Key).ApiKeyCode(ApiValidationConst.KeyMaxLength);
         }
     }
 }

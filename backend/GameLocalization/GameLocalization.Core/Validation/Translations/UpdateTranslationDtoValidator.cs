@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using GameLocalization.Core.DTO.Translations;
+using GameLocalization.Core.Validation.Common;
 
 namespace GameLocalization.Core.Validation.Translations
 {
@@ -8,8 +9,7 @@ namespace GameLocalization.Core.Validation.Translations
         public UpdateTranslationDtoValidator()
         {
             RuleFor(x => x.Value)
-                .NotNull().WithMessage("Value is required.")
-                .MaximumLength(2500);
+                .CoreTranslationValue(CoreValidationConst.TranslationValueMaxLength);
         }
     }
 }

@@ -9,10 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GameLocalization.Api.Controllers
 {
+    /// <summary>
+    /// Provides access to the localization table view.
+    /// </summary>
     [ApiController]
     [Route("api/v{version:apiVersion}/localization-table")]
     [ApiVersion("1.0")]
-    public class LocalizationTableController : ControllerBase //// todo add discription to each method
+    public class LocalizationTableController : ControllerBase
     {
         private readonly ILocalizationTableService _service;
         private readonly IMapper _mapper;
@@ -23,7 +26,18 @@ namespace GameLocalization.Api.Controllers
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
+        /// <summary>
+        /// Retrieves a page of the localization table.
+        /// </summary>
+        /// <remarks>
+        /// The response contains localization keys and their translations across all languages.
+        /// Query parameters allow filtering, searching by text, and paging results.
+        /// </remarks>
+        /// <param name="request">Query parameters for filtering and paging (page size, search term, etc.).</param>
+        /// <param name="ct">Cancellation token.</param>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<LocalizationTablePageResponse>> Get(
             [FromQuery] LocalizationTableQueryRequest request,
             CancellationToken ct = default)

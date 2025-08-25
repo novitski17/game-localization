@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using GameLocalization.Core.DTO.Keys;
+using GameLocalization.Core.Validation.Common;
 
 namespace GameLocalization.Core.Validation.LocalizationKeys
 {
@@ -8,9 +9,7 @@ namespace GameLocalization.Core.Validation.LocalizationKeys
         public CreateLocalizationKeyValidator()
         {
             RuleFor(x => x.Key)
-                .NotEmpty().WithMessage("Key is required.")
-                .MaximumLength(150).WithMessage("Key is too long.")
-                .Matches(@"^[A-Za-z0-9._\-]+$").WithMessage("Key can contain letters, digits, '.', '_' and '-'.");
+                .CoreKeyCode(CoreValidationConst.KeyMaxLength, CoreValidationConst.KeyCodePattern);
         }
     }
 }

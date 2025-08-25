@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GameLocalization.Api.Controllers
 {
-
+    /// <summary>
+    /// Provides operations for managing localization keys.
+    /// </summary>
     [ApiController]
     [Route("api/v{version:apiVersion}/localization-keys")]
     [ApiVersion("1.0")]
@@ -26,11 +28,13 @@ namespace GameLocalization.Api.Controllers
         }
 
         /// <summary>
-        /// Returns a single localization key as a table row (includes empty values by language).
+        /// Retrieves a single localization key by its ID.
         /// </summary>
-        /// <param name="id">Key ID.</param>
+        /// <param name="id">The localization key identifier.</param>
         /// <param name="ct">Cancellation token.</param>
         [HttpGet("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<LocalizationTableRowResponse>> GetById(
             Guid id,
             CancellationToken ct = default)
@@ -44,12 +48,18 @@ namespace GameLocalization.Api.Controllers
         }
 
         /// <summary>
-        /// Creates a new localization key and empty translations for all active languages.
-        /// Returns a ready-to-render table row.
+        /// Creates a new localization key.
         /// </summary>
-        /// <param name="request">Create key request.</param>
+        /// <remarks>
+        /// When a key is created, empty translation placeholders are also generated
+        /// for all active languages, so the key is immediately usable in the UI.
+        /// </remarks>
+        /// <param name="request">The request containing the key data.</param>
         /// <param name="ct">Cancellation token.</param>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<ActionResult<LocalizationTableRowResponse>> Create(
             [FromBody] CreateKeyRequest request,
             CancellationToken ct = default)
@@ -65,9 +75,13 @@ namespace GameLocalization.Api.Controllers
         }
 
         /// <summary>
-        /// Delete a localization key and all related translations.
+        /// Deletes a localization key along with all its translations.
         /// </summary>
+        /// <param name="id">The localization key identifier.</param>
+        /// <param name="ct">Cancellation token.</param>
         [HttpDelete("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(Guid id, CancellationToken ct = default)
         {
             var result = await _service.DeleteAsync(id, ct);

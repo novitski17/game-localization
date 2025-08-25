@@ -11,7 +11,8 @@ namespace GameLocalization.Api.Validations.Translations
             Include(new BaseBodyNotNullValidator<UpdateTranslationRequest>());
 
             RuleFor(x => x.Value)
-                .MaximumLength(2500).WithMessage("Value must be at most 2500 chars.");
+                .MaximumLength(ApiValidationConst.TranslationValueMaxLength)
+                .WithMessage("Value must be at most 2500 chars.");
         }
     }
 }

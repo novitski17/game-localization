@@ -1,23 +1,20 @@
 ﻿using FluentValidation;
 using GameLocalization.Core.DTO.Table;
+using GameLocalization.Core.Validation.Common;
 
 namespace GameLocalization.Core.Validation.LocalizationTable
 {
-    public sealed class LocalizationTableQueryDtoValidator : AbstractValidator<LocalizationTableQueryDto>
+    public class LocalizationTableQueryDtoValidator : AbstractValidator<LocalizationTableQueryDto>
     {
-        private const int PageSizeMin = 1;
-        private const int PageSizeMax = 200;
-        private const int SearchMaxLen = 150;
-
         public LocalizationTableQueryDtoValidator()
         {
-            RuleFor(x => x.Page).GreaterThanOrEqualTo(1);
-            RuleFor(x => x.PageSize).InclusiveBetween(PageSizeMin, PageSizeMax);
+            RuleFor(x => x.Page).CorePage(CoreValidationConst.PageMin);
+            RuleFor(x => x.PageSize)
+                .CorePageSize(CoreValidationConst.PageSizeMin, CoreValidationConst.PageSizeMax);
 
             When(x => x.Search != null,
                 () => RuleFor(x => x.Search!)
-                    .Must((s => s.Length <= SearchMaxLen))
-                    .WithMessage($"Search length must be <= {SearchMaxLen}"));
+                    .CoreSearch(CoreValidationConst.SearchMaxLength));
 
         }
     }

@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GameLocalization.Api.Controllers
 {
+    /// <summary>
+    /// Provides operations for managing translations.
+    /// </summary>
     [ApiController]
     [Route("api/v{version:apiVersion}/translations")]
     [ApiVersion("1.0")]
@@ -25,12 +28,19 @@ namespace GameLocalization.Api.Controllers
         }
 
         /// <summary>
-        /// Updates the value of a translation by its ID.
+        /// Updates the value of a translation by its unique identifier.
         /// </summary>
-        /// <param name="id">Translation ID.</param>
-        /// <param name="request">Update translation request.</param>
+        /// <remarks>
+        /// Typically called from the localization table editor.  
+        /// The request contains the new text value; if empty, the translation is considered "unset".
+        /// </remarks>
+        /// <param name="id">The translation ID.</param>
+        /// <param name="request">The request body containing the updated translation value.</param>
         /// <param name="ct">Cancellation token.</param>
         [HttpPatch("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update(
             Guid id,
             [FromBody] UpdateTranslationRequest request,

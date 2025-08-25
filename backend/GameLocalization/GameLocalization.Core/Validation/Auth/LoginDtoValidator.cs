@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using GameLocalization.Core.DTO.Auth;
+using GameLocalization.Core.Validation.Common;
 
 namespace GameLocalization.Core.Validation.Auth
 {
@@ -7,8 +8,9 @@ namespace GameLocalization.Core.Validation.Auth
     {
         public LoginDtoValidator()
         {
-            RuleFor(x => x.Email).NotEmpty().EmailAddress().MaximumLength(256);
-            RuleFor(x => x.Password).NotEmpty().MinimumLength(6).MaximumLength(128);
+            RuleFor(x => x.Email).CoreEmail(CoreValidationConst.EmailMaxLength);
+            RuleFor(x => x.Password)
+                .CorePassword(CoreValidationConst.PasswordMinLength,CoreValidationConst.PasswordMaxLength);
         }
     }
 }

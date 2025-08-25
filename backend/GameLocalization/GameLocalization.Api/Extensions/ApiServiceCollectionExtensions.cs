@@ -61,11 +61,9 @@ namespace GameLocalization.Api.Extensions
                     };
                 });
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(AppRoles.Admin, p => p.RequireRole(AppRoles.Admin));
-                options.AddPolicy(AppRoles.Member, p => p.RequireRole(AppRoles.Member));
-            });
+            _ = services.AddAuthorizationBuilder()
+                .AddPolicy(AppRoles.Admin, p => p.RequireRole(AppRoles.Admin))
+                .AddPolicy(AppRoles.Member, p => p.RequireRole(AppRoles.Member));
 
             services.AddSingleton<IAccessTokenCookieService, AccessTokenCookieService>();
 
