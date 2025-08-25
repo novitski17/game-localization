@@ -1,4 +1,6 @@
-﻿using GameLocalization.Core.Domain.Entities;
+﻿using GameLocalization.Core.Domain.Constants;
+using GameLocalization.Core.Domain.Entities;
+using GameLocalization.Core.Domain.Entities.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -11,6 +13,56 @@ namespace GameLocalization.Infrastructure.Data.Seed
             await SeedLanguagesAsync(db, logger, ct);
             await SeedKeysAsync(db, logger, ct);
             await SeedTranslationsAsync(db, logger, ct);
+        }
+
+        public static async Task SeedRolesAndAdminAsync(
+            AppDbContext db,
+            ILogger logger,
+            string adminEmail,
+            string adminPassword,
+            CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
+            {
+                logger.LogInformation("Admin seed skipped: email/password not provided.");
+                return;
+            }
+
+            var adminRole = await db.Roles.FirstOrDefaultAsync(r => r.Name == AppRoles.Admin, ct);
+            if (adminRole == null)
+            {
+                adminRole = new Role { Id = Guid.NewGuid(), Name = AppRoles.Admin };
+                await db.Roles.AddAsync(adminRole, ct);
+                logger.LogInformation("Role '{Role}' created.", AppRoles.Admin);
+            }
+
+            var memberRole = await db.Roles.FirstOrDefaultAsync(r => r.Name == AppRoles.Member, ct);
+            if (memberRole == null)
+            {
+                memberRole = new Role { Id = Guid.NewGuid(), Name = AppRoles.Member };
+                await db.Roles.AddAsync(memberRole, ct);
+                logger.LogInformation("Role '{Role}' created.", AppRoles.Member);
+            }
+
+            var exists = await db.Users.AnyAsync(u => u.Email == adminEmail, ct);
+            if (!exists)
+            {
+                var hash = BCrypt.Net.BCrypt.HashPassword(adminPassword);
+
+                var user = new User
+                {
+                    Id = Guid.NewGuid(),
+                    Email = adminEmail,
+                    PasswordHash = hash,
+                    RoleId = adminRole.Id,
+                    Role = adminRole
+                };
+                await db.Users.AddAsync(user, ct);
+                logger.LogInformation("Seed admin user created: {Email}", adminEmail);
+            }
+
+
+            await db.SaveChangesAsync(ct);
         }
 
         private static async Task SeedLanguagesAsync(AppDbContext db, ILogger logger, CancellationToken ct)
@@ -73,5 +125,6 @@ namespace GameLocalization.Infrastructure.Data.Seed
             logger.LogInformation("Seeded translations: {Pairs} (keys × langs).",
                 keys.Count * langs.Count);
         }
+
     }
 }

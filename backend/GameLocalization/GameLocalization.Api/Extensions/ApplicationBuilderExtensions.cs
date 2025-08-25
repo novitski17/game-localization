@@ -42,6 +42,7 @@ namespace GameLocalization.Api.Extensions
 
             var runMigrations = cfg.GetValue("Database:RunMigrationsOnStartup", true);
             var runSeed = cfg.GetValue("Database:RunSeedOnStartup", true);
+            var seedAdmin = cfg.GetValue("Auth:AdminSeed:Enabled", true);
 
             try
             {
@@ -55,6 +56,17 @@ namespace GameLocalization.Api.Extensions
                 {
                     DbSeeder.SeedAsync(db, logger).GetAwaiter().GetResult();
                     logger.LogInformation("Database seeded.");
+                }
+
+                if (seedAdmin)
+                {
+                    var adminEmail = cfg["Auth:AdminSeed:Email"];
+                    var adminPassword = cfg["Auth:AdminSeed:Password"];
+
+                    DbSeeder.SeedRolesAndAdminAsync(db, logger, adminEmail!, adminPassword!)
+                        .GetAwaiter().GetResult();
+
+                    logger.LogInformation("Roles and admin seeding completed.");
                 }
             }
             catch (Exception ex)

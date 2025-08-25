@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace GameLocalization.Api.ErrorHandling
 {
-    public sealed class DefaultProblemDetailsWriter : IAppProblemDetailsWriter
+    public class DefaultProblemDetailsWriter : IAppProblemDetailsWriter
     {
         private readonly IWebHostEnvironment _env;
         public DefaultProblemDetailsWriter(IWebHostEnvironment env) => _env = env;

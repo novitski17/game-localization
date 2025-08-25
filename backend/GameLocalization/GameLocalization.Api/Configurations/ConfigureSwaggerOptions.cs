@@ -24,6 +24,31 @@ namespace GameLocalization.Api.Configurations
                     Version = description.ApiVersion.ToString(),
                 });
             }
+
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Enter the token in the format: Bearer {your_jwt_token}"
+            });
+
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id   = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
         }
     }
 }

@@ -61,6 +61,22 @@ namespace GameLocalization.Core.Errors
         }
     }
 
+    public sealed class UnauthorizedError : AppError
+    {
+        public UnauthorizedError(string message = "Unauthorized")
+            : base(message, 401, "Unauthorized")
+        {
+        }
+    }
+
+    public sealed class ConfigurationError : AppError
+    {
+        public ConfigurationError(string message)
+            : base(message, 500, "Configuration")
+        {
+        }
+    }
+
     public sealed class ValidationAppError : AppError
     {
         public IReadOnlyDictionary<string, string[]> Errors { get; }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GameLocalization.Api.Middleware
 {
-    public sealed class ErrorHandlingMiddleware
+    public class ErrorHandlingMiddleware
     {
         private const int ClientClosedStatus = 499;
 

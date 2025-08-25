@@ -12,8 +12,8 @@ namespace GameLocalization.Core.Services
 {
     public class LocalizationTableService : ILocalizationTableService
     {
-        private readonly ILanguageRepository _languagesRepository;
-        private readonly ILocalizationKeyRepository _keysRepository;
+        private readonly ILanguageRepository _languageRepository;
+        private readonly ILocalizationKeyRepository _keyRepository;
         private readonly IValidator<LocalizationTableQueryDto> _validator;
 
         public LocalizationTableService(
@@ -21,8 +21,8 @@ namespace GameLocalization.Core.Services
             ILocalizationKeyRepository keysRepository,
             IValidator<LocalizationTableQueryDto> validator)
         {
-            _languagesRepository = languagesRepository ?? throw new ArgumentNullException(nameof(languagesRepository));
-            _keysRepository = keysRepository ?? throw new ArgumentNullException(nameof(keysRepository));
+            _languageRepository = languagesRepository ?? throw new ArgumentNullException(nameof(languagesRepository));
+            _keyRepository = keysRepository ?? throw new ArgumentNullException(nameof(keysRepository));
             _validator = validator ?? throw new ArgumentNullException(nameof(validator));
         }
 
@@ -37,7 +37,7 @@ namespace GameLocalization.Core.Services
 
             var languagesCode = await LoadLanguageCodesAsync(query.IncludeDisabledLanguages, ct);
 
-            var page = await _keysRepository
+            var page = await _keyRepository
                 .GetPageWithTranslationsAsync(
                     query.Page,
                     query.PageSize,
@@ -64,7 +64,7 @@ namespace GameLocalization.Core.Services
 
         private async Task<string[]> LoadLanguageCodesAsync(bool includeDisabledLanguages, CancellationToken ct)
         {
-            var languages = await _languagesRepository.GetAllAsync(includeDisabledLanguages, ct);
+            var languages = await _languageRepository.GetAllAsync(includeDisabledLanguages, ct);
             
             return languages
                 .OrderBy(l => l.Code, StringComparer.Ordinal)

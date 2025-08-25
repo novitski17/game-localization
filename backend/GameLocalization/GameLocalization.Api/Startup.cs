@@ -17,8 +17,8 @@ namespace GameLocalization.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddInfrastructureServices(_configuration);
-            services.AddCoreServices();
-            services.AddApiServices();
+            services.AddCoreServices(_configuration);
+            services.AddApiServices(_configuration);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -31,6 +31,11 @@ namespace GameLocalization.Api
 
             app.UseHttpsRedirection();
             app.UseRouting();
+
+            app.UseCors("spa");
+            app.UseCookieJwtForwarding();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

@@ -25,6 +25,16 @@ namespace GameLocalization.Api.Extensions
             return controller.MapErrors(result.Errors);
         }
 
+        public static ActionResult ToActionResult<TDomain>(
+            this ControllerBase controller,
+            Result<TDomain> result,
+            Func<TDomain, ActionResult> onSuccess)
+        {
+            return result.IsSuccess
+                ? onSuccess(result.Value)
+                : controller.MapErrors(result.Errors);
+        }
+
         public static ActionResult<TResponse> ToOkWrapped<TDomain, TResponse>(
             this ControllerBase controller,
             Result<TDomain> result,

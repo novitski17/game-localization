@@ -4,6 +4,8 @@ using GameLocalization.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using GameLocalization.Core.Interfaces.Repositories.Identity;
+using GameLocalization.Infrastructure.Repositories.Identity;
 
 namespace GameLocalization.Infrastructure.Extensions
 {
@@ -21,6 +23,9 @@ namespace GameLocalization.Infrastructure.Extensions
             services.AddScoped<ILocalizationKeyRepository, LocalizationKeyRepository>();
             services.AddScoped<ILanguageRepository, LanguageRepository>();
             services.AddScoped<ITranslationRepository, TranslationRepository>();
+
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
 
             return services;
         }

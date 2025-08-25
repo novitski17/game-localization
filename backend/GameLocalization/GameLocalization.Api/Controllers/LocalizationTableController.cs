@@ -12,7 +12,7 @@ namespace GameLocalization.Api.Controllers
     [ApiController]
     [Route("api/v{version:apiVersion}/localization-table")]
     [ApiVersion("1.0")]
-    public class LocalizationTableController : ControllerBase
+    public class LocalizationTableController : ControllerBase //// todo add discription to each method
     {
         private readonly ILocalizationTableService _service;
         private readonly IMapper _mapper;
