@@ -2,8 +2,10 @@
 using AutoMapper;
 using GameLocalization.Api.Extensions;
 using GameLocalization.Api.Models.Requests.Translations;
+using GameLocalization.Core.Domain.Constants;
 using GameLocalization.Core.DTO.Translations;
 using GameLocalization.Core.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GameLocalization.Api.Controllers
@@ -11,6 +13,7 @@ namespace GameLocalization.Api.Controllers
     /// <summary>
     /// Provides operations for managing translations.
     /// </summary>
+    [Authorize(Policy = AppRoles.Member)]
     [ApiController]
     [Route("api/v{version:apiVersion}/translations")]
     [ApiVersion("1.0")]
@@ -40,6 +43,7 @@ namespace GameLocalization.Api.Controllers
         [HttpPatch("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update(
             Guid id,

@@ -21,7 +21,7 @@ namespace GameLocalization.Core.Providers
         {
             var claims = new List<Claim>
             {
-                new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, role),
             };

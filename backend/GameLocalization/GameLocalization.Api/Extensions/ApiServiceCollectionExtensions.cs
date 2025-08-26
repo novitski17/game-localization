@@ -62,8 +62,10 @@ namespace GameLocalization.Api.Extensions
                 });
 
             _ = services.AddAuthorizationBuilder()
+                .AddFallbackPolicy("RequireAuthByDefault",
+                    p => p.RequireAuthenticatedUser())
                 .AddPolicy(AppRoles.Admin, p => p.RequireRole(AppRoles.Admin))
-                .AddPolicy(AppRoles.Member, p => p.RequireRole(AppRoles.Member));
+                .AddPolicy(AppRoles.Member, p => p.RequireRole(AppRoles.Admin,AppRoles.Member));
 
             services.AddSingleton<IAccessTokenCookieService, AccessTokenCookieService>();
 

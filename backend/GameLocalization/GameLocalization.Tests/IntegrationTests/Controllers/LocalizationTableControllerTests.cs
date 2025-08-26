@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using GameLocalization.Core.Domain.Entities;
+using GameLocalization.Tests.TestSupport.Auth;
 
 namespace GameLocalization.Tests.IntegrationTests.Controllers
 {
@@ -44,6 +45,8 @@ namespace GameLocalization.Tests.IntegrationTests.Controllers
                 );
                 return Task.CompletedTask;
             });
+
+            Client.AsMember();
 
             var resp = await Client
                 .GetAsync("api/v1/localization-table?page=1&pageSize=10&search=menu&includeDisabled=false");

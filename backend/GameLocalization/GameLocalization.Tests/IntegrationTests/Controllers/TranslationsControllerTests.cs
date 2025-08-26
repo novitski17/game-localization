@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using GameLocalization.Core.Domain.Entities;
 using Microsoft.Extensions.DependencyInjection;
+using GameLocalization.Tests.TestSupport.Auth;
 
 namespace GameLocalization.Tests.IntegrationTests.Controllers
 {
@@ -32,6 +33,8 @@ namespace GameLocalization.Tests.IntegrationTests.Controllers
                 return Task.CompletedTask;
             });
 
+            Client.AsMember();
+
             var resp = await Client
                 .PatchAsJsonAsync($"api/v1/translations/{id}", new UpdateTranslationRequest("New Value"));
             resp.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -45,6 +48,7 @@ namespace GameLocalization.Tests.IntegrationTests.Controllers
         [Test]
         public async Task Patch_Update_Should_Return_404_When_NotFound()
         {
+            Client.AsMember();
             var resp = await Client.PatchAsJsonAsync($"api/v1/translations/{Guid.NewGuid()}",
                                                      new UpdateTranslationRequest("x"));
             resp.StatusCode.Should().Be(HttpStatusCode.NotFound);

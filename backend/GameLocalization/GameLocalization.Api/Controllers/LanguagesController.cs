@@ -3,8 +3,10 @@ using AutoMapper;
 using GameLocalization.Api.Extensions;
 using GameLocalization.Api.Models.Requests.Languages;
 using GameLocalization.Api.Models.Responses.Languages;
+using GameLocalization.Core.Domain.Constants;
 using GameLocalization.Core.DTO.Languages;
 using GameLocalization.Core.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GameLocalization.Api.Controllers
@@ -12,12 +14,13 @@ namespace GameLocalization.Api.Controllers
     /// <summary>
     /// Provides operations for managing application languages.
     /// </summary>
+    [Authorize(Policy = AppRoles.Member)]
     [ApiController]
     [Route("api/v{version:apiVersion}/languages")]
     [ApiVersion("1.0")]
     public class LanguagesController : ControllerBase
     {
-        private readonly ILanguageService _service;
+        private readonly ILanguageService _service; 
         private readonly IMapper _mapper;
         public LanguagesController(ILanguageService service, IMapper mapper)
         { 
@@ -52,6 +55,7 @@ namespace GameLocalization.Api.Controllers
         [HttpGet("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<LanguageResponse>> GetById(Guid id, CancellationToken ct = default)
         {
@@ -69,6 +73,7 @@ namespace GameLocalization.Api.Controllers
         [HttpPatch("{id:guid}/status")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<LanguageResponse>> UpdateStatus(
             Guid id,

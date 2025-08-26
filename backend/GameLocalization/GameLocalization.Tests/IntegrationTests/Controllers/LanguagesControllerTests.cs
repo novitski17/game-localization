@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using GameLocalization.Core.Domain.Entities;
 using Microsoft.Extensions.DependencyInjection;
+using GameLocalization.Tests.TestSupport.Auth;
 
 namespace GameLocalization.Tests.IntegrationTests.Controllers
 {
@@ -23,6 +24,8 @@ namespace GameLocalization.Tests.IntegrationTests.Controllers
 
                 return Task.CompletedTask;
             });
+
+            Client.AsMember();
 
             var response = await Client.GetAsync("api/v1/languages");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -46,6 +49,8 @@ namespace GameLocalization.Tests.IntegrationTests.Controllers
                 return Task.CompletedTask;
             });
 
+            Client.AsMember();
+
             var response = await Client.GetAsync("api/v1/languages?includeDisabled=true");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -58,6 +63,7 @@ namespace GameLocalization.Tests.IntegrationTests.Controllers
         [Test]
         public async Task Get_ById_Should_Return_404_When_NotFound()
         {
+            Client.AsMember();
             var resp = await Client.GetAsync($"api/v1/languages/{Guid.NewGuid()}");
             resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
@@ -79,6 +85,8 @@ namespace GameLocalization.Tests.IntegrationTests.Controllers
 
                 return Task.CompletedTask;
             });
+
+            Client.AsMember();
 
             var resp = await Client.GetAsync($"api/v1/languages/{id}");
             resp.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -109,6 +117,8 @@ namespace GameLocalization.Tests.IntegrationTests.Controllers
                 return Task.CompletedTask;
             });
 
+            Client.AsMember();
+
             var patch = new HttpRequestMessage(HttpMethod.Patch, $"api/v1/languages/{id}/status")
             {
                 Content = JsonContent.Create(new UpdateStatusRequest(true))
@@ -126,6 +136,16 @@ namespace GameLocalization.Tests.IntegrationTests.Controllers
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var entity = await db.Languages.FindAsync(id);
             entity!.IsEnabled.Should().BeTrue();
+        }
+
+        [Test]
+        public async Task Get_Languages_WithoutAuth_Should_Return_401()
+        {
+            Client.ClearAuth();
+
+            var resp = await Client.GetAsync("api/v1/languages");
+
+            resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         private record LanguageDto(Guid Id, string Code, string Name, bool IsEnabled);

@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using GameLocalization.Core.Domain.Entities;
 using Microsoft.Extensions.DependencyInjection;
+using GameLocalization.Tests.TestSupport.Auth;
 
 namespace GameLocalization.Tests.IntegrationTests.Controllers
 {
@@ -14,6 +15,7 @@ namespace GameLocalization.Tests.IntegrationTests.Controllers
         [Test]
         public async Task Get_ById_Should_Return_404_When_NotFound()
         {
+            Client.AsMember();
             var resp = await Client.GetAsync($"api/v1/localization-keys/{Guid.NewGuid()}");
             resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
@@ -31,6 +33,7 @@ namespace GameLocalization.Tests.IntegrationTests.Controllers
             });
 
             var cmd = new CreateKeyRequest("Menu.Play ");
+            Client.AsMember();
 
             var resp = await Client.PostAsJsonAsync("api/v1/localization-keys", cmd);
             resp.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -58,6 +61,8 @@ namespace GameLocalization.Tests.IntegrationTests.Controllers
                 db.LocalizationKeys.Add(new LocalizationKey { Id = id, Key = "menu.exit" });
                 return Task.CompletedTask;
             });
+
+            Client.AsMember();
 
             var resp = await Client.DeleteAsync($"api/v1/localization-keys/{id}");
             resp.StatusCode.Should().Be(HttpStatusCode.NoContent);
