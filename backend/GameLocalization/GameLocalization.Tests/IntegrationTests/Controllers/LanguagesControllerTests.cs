@@ -148,6 +148,122 @@ namespace GameLocalization.Tests.IntegrationTests.Controllers
             resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
+        [Test]
+        public async Task Post_Admin_Should_Create_And_Return_201()
+        {
+            Client.AsAdmin();
+            var body = new { Code = "it", Name = "Italian", IsEnabled = true };
+
+            var resp = await Client.PostAsJsonAsync("/api/v1/languages", body);
+
+            resp.StatusCode.Should().Be(HttpStatusCode.Created);
+            var dto = await resp.Content.ReadFromJsonAsync<LanguageDto>();
+            dto.Should().NotBeNull();
+            dto!.Code.Should().Be("it");
+            dto.Name.Should().Be("Italian");
+            dto.IsEnabled.Should().BeTrue();
+        }
+
+
+        [Test]
+        public async Task Post_Admin_Should_Return_409_On_Duplicate_Code()
+        {
+            var id = Guid.NewGuid();
+
+            await SeedAsync(db =>
+            {
+                db.Languages.Add(new Language
+                {
+                    Id = id,
+                    Code = "de",
+                    Name = "Deutsch",
+                    IsEnabled = true
+                });
+
+                return Task.CompletedTask;
+            });
+
+            Client.AsAdmin();
+
+            var dup = await Client
+                .PostAsJsonAsync("/api/v1/languages", new { Code = "de", Name = "Deutsch", IsEnabled = true });
+
+
+            dup.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        }
+
+        [Test]
+        public async Task Put_Admin_Should_Update_And_Return_200()
+        {
+            var id = Guid.NewGuid();
+
+            await SeedAsync(db =>
+            {
+                db.Languages.Add(new Language
+                {
+                    Id = id,
+                    Code = "es",
+                    Name = "Spanish",
+                    IsEnabled = true
+                });
+
+                return Task.CompletedTask;
+            });
+
+            Client.AsAdmin();
+
+            var updateBody = new
+            {
+                Code = "es-es",
+                Name = "Español",
+                IsEnabled = false
+            };
+
+            var resp = await Client.PutAsJsonAsync($"/api/v1/languages/{id}", updateBody);
+
+            resp.StatusCode.Should().Be(HttpStatusCode.OK);
+            var dto = await resp.Content.ReadFromJsonAsync<LanguageDto>();
+            dto.Should().NotBeNull();
+            dto!.Id.Should().Be(id);
+            dto.Code.Should().Be("es-es");
+            dto.Name.Should().Be("Español");
+            dto.IsEnabled.Should().BeFalse();
+        }
+
+        [Test]
+        public async Task Put_Admin_Should_Return_404_When_NotFound()
+        {
+            Client.AsAdmin();
+            var updateBody = new { Code = "no", Name = "Norsk", IsEnabled = true };
+
+            var resp = await Client.PutAsJsonAsync($"/api/v1/languages/{Guid.NewGuid()}", updateBody);
+
+            resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Test]
+        public async Task Delete_Admin_Should_Return_204_And_Then_404_On_Get()
+        {
+            Client.AsAdmin();
+            var create = await Client.PostAsJsonAsync("/api/v1/languages",
+                new
+                {
+                    Code = "cz",
+                    Name = "Czech",
+                    IsEnabled = true,
+                });
+
+            var created = await create.Content.ReadFromJsonAsync<LanguageDto>();
+
+            var del = await Client.DeleteAsync($"/api/v1/languages/{created!.Id}");
+
+            del.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+            Client.AsMember();
+            var getAfter = await Client.GetAsync($"/api/v1/languages/{created.Id}");
+            getAfter.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
         private record LanguageDto(Guid Id, string Code, string Name, bool IsEnabled);
         private record UpdateStatusRequest(bool IsEnabled);
 

@@ -83,5 +83,77 @@ namespace GameLocalization.Api.Controllers
             var result = await _service.UpdateStatusAsync(id, request.IsEnabled, ct);
             return this.ToOkWrapped<LanguageDto, LanguageResponse>(result, _mapper);
         }
+
+        /// <summary>
+        /// Updates the details of an existing language (name, code, enabled status).
+        /// </summary>
+        /// <param name="id">The language ID.</param>
+        /// <param name="request">The request body with updated language data.</param>
+        /// <param name="ct">Cancellation token.</param>
+        /// <returns>The updated <see cref="LanguageResponse"/>.</returns>
+        [HttpPut("{id:guid}")]
+        [Authorize(Policy = AppRoles.Admin)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<LanguageResponse>> Update(
+            Guid id,
+            [FromBody] UpdateLanguageRequest request,
+            CancellationToken ct = default)
+        {
+            var result = await _service
+                .UpdateAsync(id,_mapper.Map<UpdateLanguageDto>(request), ct);
+
+            return this.ToOkWrapped<LanguageDto, LanguageResponse>(result, _mapper);
+        }
+
+        /// <summary>
+        /// Creates a new language entry.
+        /// </summary>
+        /// <param name="request">The request body containing language data.</param>
+        /// <param name="ct">Cancellation token.</param>
+        /// <returns>The created <see cref="LanguageResponse"/>.</returns>
+        [HttpPost]
+        [Authorize(Policy = AppRoles.Admin)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<LanguageResponse>> Create(
+            [FromBody] CreateLanguageRequest request,
+            CancellationToken ct = default)
+        {
+            var result = await _service
+                .CreateAsync(_mapper.Map<CreateLanguageDto>(request), ct);
+
+            return this.ToActionResult<LanguageDto, LanguageResponse>(
+                result,
+                _mapper,
+                onSuccess: r => CreatedAtAction(nameof(GetById), new { id = r.Id }, r)
+            );
+        }
+
+        /// <summary>
+        /// Deletes a language by its ID.
+        /// </summary>
+        /// <param name="id">The language ID.</param>
+        /// <param name="ct">Cancellation token.</param>
+        /// <returns>No content if deletion succeeded.</returns>
+        [HttpDelete("{id:guid}")]
+        [Authorize(Policy = AppRoles.Admin)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete(
+            Guid id,
+            CancellationToken ct = default)
+        {
+            var result = await _service.DeleteAsync(id, ct);
+            return this.ToActionResult(result);
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using GameLocalization.Api.Models.Requests.Auth;
 using GameLocalization.Api.Models.Requests.Keys;
+using GameLocalization.Api.Models.Requests.Languages;
 using GameLocalization.Api.Models.Requests.LocalizationTable;
 using GameLocalization.Api.Models.Requests.Translations;
 using GameLocalization.Api.Models.Responses.Common;
@@ -37,6 +38,8 @@ namespace GameLocalization.Api.Helpers.Mappers
                     m => m.MapFrom(s => string.IsNullOrWhiteSpace(s.Search) ? null : s.Search.Trim()));
             CreateMap<LoginRequest, LoginDto>();
             CreateMap<RegisterRequest, RegisterDto>();
+            CreateMap<CreateLanguageRequest, CreateLanguageDto>();
+            CreateMap<UpdateLanguageRequest, UpdateLanguageDto>();
         }
     }
 }

@@ -2,8 +2,8 @@
 {
     public class UpdateLanguageRequest
     {
-        public string? Code { get; init; }
-        public string? Name { get; init; }
-        public bool? IsEnabled { get; init; }
+        public string Code { get; init; } = default!;
+        public string Name { get; init; } = default!;
+        public bool IsEnabled { get; init; }
     }
 }
