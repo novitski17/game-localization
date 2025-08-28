@@ -7,6 +7,7 @@ using GameLocalization.Api.Models.Requests.Translations;
 using GameLocalization.Api.Models.Responses.Common;
 using GameLocalization.Api.Models.Responses.Languages;
 using GameLocalization.Api.Models.Responses.Table;
+using GameLocalization.Api.Models.Responses.Translation;
 using GameLocalization.Core.DTO.Auth;
 using GameLocalization.Core.DTO.Common;
 using GameLocalization.Core.DTO.Keys;
@@ -21,6 +22,8 @@ namespace GameLocalization.Api.Helpers.Mappers
         public CoreDtoToApiResponseProfile()
         {
             CreateMap<LanguageDto, LanguageResponse>();
+            CreateMap<TranslationDto, TranslationResponse>()
+                .ForMember(t => t.LocalizationKeyId, m => m.MapFrom(t => t.KeyId));
             CreateMap<LocalizationTableRowDto, LocalizationTableRowResponse>();
 
             CreateMap<CreateKeyRequest, CreateLocalizationKeyDto>()

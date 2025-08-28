@@ -2,6 +2,7 @@
 using AutoMapper;
 using GameLocalization.Api.Extensions;
 using GameLocalization.Api.Models.Requests.Translations;
+using GameLocalization.Api.Models.Responses.Translation;
 using GameLocalization.Core.Domain.Constants;
 using GameLocalization.Core.DTO.Translations;
 using GameLocalization.Core.Interfaces.Services;
@@ -45,7 +46,7 @@ namespace GameLocalization.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update(
+        public async Task<IActionResult> UpdateById(
             Guid id,
             [FromBody] UpdateTranslationRequest request,
             CancellationToken ct = default)
@@ -54,6 +55,43 @@ namespace GameLocalization.Api.Controllers
 
             var result = await _service.UpdateAsync(id, dto, ct);
             return this.ToActionResult(result);
+        }
+
+        /// <summary>
+        /// Updates the value of a translation identified by a localization key and language code.
+        /// </summary>
+        /// <remarks>
+        /// Typically called from the localization table editor.
+        /// The request contains the new text value; if empty, the translation is considered "unset".
+        /// </remarks>
+        /// <param name="keyId">The localization key ID.</param>
+        /// <param name="lang">The language code (e.g., "en", "ru", "it").</param>
+        /// <param name="request">The request body containing the updated translation value.</param>
+        /// <param name="ct">Cancellation token.</param>
+        /// <returns>The updated translation payload.</returns>
+        [HttpPut("{keyId:guid}/{lang}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<TranslationResponse>> UpdateByKeyAndLanguage(
+            [FromRoute] Guid keyId,
+            [FromRoute] string lang,
+            [FromBody] UpdateTranslationRequest request,
+            CancellationToken ct = default)
+        {
+
+            var dto = new UpdateTranslationByKeyDto
+            {
+                LocalizationKeyId = keyId,
+                LanguageCode = lang.ToLowerInvariant(),
+                Value = request.Value,
+            };
+
+            var result = await _service
+                .UpdateByKeyAsync(dto, ct);
+
+            return this.ToActionResult<TranslationDto, TranslationResponse>(result, _mapper);
         }
     }
 }

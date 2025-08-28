@@ -1,6 +1,7 @@
 ﻿using GameLocalization.Core.Domain.Entities;
 using GameLocalization.Core.DTO.Languages;
 using AutoMapper;
+using GameLocalization.Core.DTO.Translations;
 
 namespace GameLocalization.Core.Mapping
 {
@@ -15,6 +16,12 @@ namespace GameLocalization.Core.Mapping
                     m.MapFrom(s => s.Code.Trim().ToLowerInvariant()))
                 .ForMember(d => d.Name, m => 
                     m.MapFrom(s => s.Name.Trim()));
+
+            CreateMap<Translation, TranslationDto>()
+                .ForMember(d => d.KeyId,
+                    m => m.MapFrom(s => s.LocalizationKeyId))
+                .ForMember(d => d.LanguageCode,
+                    m => m.MapFrom(s => s.Language.Code));
         }
     }
 }

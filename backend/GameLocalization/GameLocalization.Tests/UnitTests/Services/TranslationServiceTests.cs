@@ -27,13 +27,16 @@ namespace GameLocalization.Tests.UnitTests.Services
             _unitOfWorkMock = new Mock<IUnitOfWork>(MockBehavior.Strict);
             _loggerMock = new Mock<ILogger<TranslationService>>(MockBehavior.Loose);
 
-            var updateValidator = new UpdateTranslationDtoValidator();
+            var updateByKeyValidator = new UpdateTranslationByKeyDtoValidator();
+            var updateByIdValidator = new UpdateTranslationDtoValidator();
 
             _translationService = new TranslationService(
                 _translationRepositoryMock.Object,
                 _unitOfWorkMock.Object,
-                updateValidator,
-                _loggerMock.Object);
+                updateByIdValidator,
+                updateByKeyValidator,
+                _loggerMock.Object,
+                Mapper);
         }
 
         [Test]
