@@ -3,6 +3,8 @@ import type {
   LocalizationTableParams,
 } from "@/types";
 import { EditableCell } from "./EditableCell";
+import { useState } from "react";
+import { useDeleteKey } from "@/features/localization/hooks";
 
 type Props = {
   data?: LocalizationTableResponse;
@@ -13,6 +15,25 @@ type Props = {
 export function LocalizationTable({ data, isLoading, tableParams }: Props) {
   const languageCodes = data?.languageCodes ?? [];
   const rows = data?.rows.items ?? [];
+
+  const del = useDeleteKey(tableParams);
+  const [pendingId, setPendingId] = useState<string | null>(null);
+
+  async function handleDelete(id: string, keyName: string) {
+    if (
+      !confirm(
+        `Delete key "${keyName}"?\nAll translations for this key will be removed.`
+      )
+    )
+      return;
+
+    setPendingId(id);
+    try {
+      await del.mutateAsync({ id });
+    } finally {
+      setPendingId(null);
+    }
+  }
 
   return (
     <div className="overflow-auto border rounded-md">
@@ -65,7 +86,20 @@ export function LocalizationTable({ data, isLoading, tableParams }: Props) {
             rows.map((row) => (
               <tr key={row.keyId} className="hover:bg-gray-50">
                 <td className="sticky left-0 z-10 bg-white p-2 text-sm border-r align-top">
-                  <div className="font-medium">{row.key}</div>
+                  <div className="flex items-start gap-2">
+                    <div className="font-medium break-all">{row.key}</div>
+                    <button
+                      className="ml-auto shrink-0 rounded border px-2 h-7 text-xs hover:bg-red-50"
+                      disabled={del.isPending && pendingId === row.keyId}
+                      onClick={() => handleDelete(row.keyId, row.key)}
+                      title="Delete key"
+                      aria-label={`Delete key ${row.key}`}
+                    >
+                      {del.isPending && pendingId === row.keyId
+                        ? "Deleting…"
+                        : "Delete"}
+                    </button>
+                  </div>
                 </td>
                 {languageCodes.map((code) => (
                   <td key={code} className="p-2 text-sm border-r align-top">

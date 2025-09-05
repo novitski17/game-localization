@@ -37,5 +37,15 @@ services:
     ports:
       - "8080:8080"
 
+  frontend:
+    container_name: game-localization-frontend
+    build:
+      context: ./game-localization-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
 volumes:
   pgdata:
