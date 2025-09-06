@@ -1,7 +1,9 @@
 # 🎮 Game Localization Platform
 
-A localization management tool for games.
-It helps teams manage translation keys and their values across multiple languages, with authentication, project management, and an admin panel.
+A localization management tool for games.  
+It helps teams manage translation keys and their values across multiple languages,  
+with authentication, project management, and an admin panel.
+
 Stack: .NET 8 (Web API) + PostgreSQL + React (Vite + Tailwind), fully dockerized.
 
 ---
@@ -45,7 +47,7 @@ Stack: .NET 8 (Web API) + PostgreSQL + React (Vite + Tailwind), fully dockerized
 ### 1) Clone repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/novitski17/game-localization
 cd game-localization
 ```
 
